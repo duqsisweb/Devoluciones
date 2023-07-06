@@ -26,6 +26,7 @@ if (isset($_SESSION['usuario'])) {
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.20/dist/sweetalert2.min.js"></script>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.20/dist/sweetalert2.min.css">
 
+
     </head>
 
 
@@ -58,9 +59,14 @@ if (isset($_SESSION['usuario'])) {
                 $factura = $_POST['fac'];
                 $codigoDevolucion = $_POST['cod'];
                 $fechaRecibido = $_POST['fechaRecibido'] . "T" . date('H:i:s');
-                // fechaenviada
                 $usuario = $_SESSION['usuario'];
                 $nombre = $_SESSION['NOMBRE'];
+
+                $notaCredito = $_SESSION['notaCredito'];
+                $fechanotacredito = $_SESSION['fechanotacredito'];
+                $Usuarionotacredito = $_SESSION['Usuarionotacredito'];
+
+
                 $TIPODEFACTURA = $_POST['TIPODEFACTURA'];
                 $totalRecorridos = $_POST['recorrido'];
                 // echo  $totalRecorridos;
@@ -73,8 +79,8 @@ if (isset($_SESSION['usuario'])) {
                     // echo "INSERT INTO DUQUESA..DistribucionDevoluciones (factura, codigo, fechaRecibido, fechaEnviado, usuario, NOMBRE, TIPODEFACTURA, PRODUCTO, cantidad, cantidadOriginal ) 
                     // VALUES ('$factura', '$codigoDevolucion', '$fechaRecibido', Getdate(), '$usuario', '$nombre', '$TIPODEFACTURA', '$PRODUCTO', '$cantidad', '$cantidadOriginal')";
 
-                    $Consulta = odbc_exec($conexion, "INSERT INTO DUQUESA..DistribucionDevoluciones (factura, codigo, fechaRecibido, fechaEnviado, usuario, NOMBRE, TIPODEFACTURA, PRODUCTO, cantidad, cantidadOriginal ) 
-                    VALUES ('$factura', '$codigoDevolucion', '$fechaRecibido', Getdate(), '$usuario', '$nombre', '$TIPODEFACTURA', '$PRODUCTO', '$cantidad', '$cantidadOriginal' )");
+                    $Consulta = odbc_exec($conexion, "INSERT INTO DUQUESA..DistribucionDevoluciones (factura, codigo, fechaRecibido, fechaEnviado, usuario, NOMBRE, TIPODEFACTURA, PRODUCTO, cantidad, cantidadOriginal, notaCredito, fechanotacredito, Usuarionotacredito ) 
+                    VALUES ('$factura', '$codigoDevolucion', '$fechaRecibido', Getdate(), '$usuario', '$nombre', '$TIPODEFACTURA', '$PRODUCTO', '$cantidad', '$cantidadOriginal', '$notaCredito', '$fechanotacredito', '$Usuarionotacredito' )");
                 }
             }
             ?>
@@ -180,8 +186,8 @@ if (isset($_SESSION['usuario'])) {
                                                             <div class="col-md-4"></div>
                                                             <div class="col-md-4">
                                                                 <select name="TIPODEFACTURA" class="form-select" aria-label="Default select example" id="tipo-factura" required aria-required="true">
-                                                                    <option value="PARCIAL">PARCIAL</option>
                                                                     <option value="COMPLETA">COMPLETA</option>
+                                                                    <option value="PARCIAL">PARCIAL</option>
                                                                 </select>
                                                             </div>
                                                             <div class="col-md-4"></div>
@@ -215,7 +221,7 @@ if (isset($_SESSION['usuario'])) {
                                                     <td><?= utf8_encode($a['Nombre_Producto_Mvto']) ?></td>
                                                     <td><input class="caracteres" type="number" name="cantidad<?php echo $count; ?>" value="<?php echo round(($a['cantidad'])) ?>" readonly></input></td>
 
-                                                    <input type="hidden" name="PRODUCTO<?php echo $count; ?>" value="<?php echo ($a['PRODUCTO']) ?>""></input>
+                                                    <input type="hidden" name="PRODUCTO<?php echo $count; ?>" value="<?php echo ($a['PRODUCTO']) ?>"></input>
                                                     <input type="hidden" name="Nombre_Producto_Mvto<?php echo $count; ?>" value="<?php echo ($a['Nombre_Producto_Mvto']) ?>"></input>
                                                     <input type="hidden" name="cantidadOriginal<?php echo $count; ?>" value="<?php echo ($a['cantidad']) ?>"></input>
                                                 </tr>
@@ -226,9 +232,15 @@ if (isset($_SESSION['usuario'])) {
 
                                             ?>
                                             <?php $totalRecorridos = $count; ?>
-                                            <input type="hidden" name="recorrido" value=<?php echo $totalRecorridos = $count; ?>></input>
-                                            <input type="hidden" name="cantidad" value=<?php echo $totalRecorridos = $count; ?>></input>
-                                            <input type="hidden" name="cantidadOriginal" value=<?php echo $totalRecorridos = $count; ?>></input>
+                                            <input type="hidden" name="recorrido" value="<?php echo $totalRecorridos = $count; ?>"></input>
+                                            <input type="hidden" name="cantidad" value="<?php echo $totalRecorridos = $count; ?>"></input>
+                                            <input type="hidden" name="cantidadOriginal" value="<?php echo $totalRecorridos = $count; ?>"></input>
+
+                                            <input type="hidden" name="notaCredito" value=""></input>
+                                            <input type="hidden" name="fechanotacredito" value="<?php echo date('Y-m-d H:i:s', strtotime('now')); ?>"></input>
+                                            <input type="hidden" name="Usuarionotacredito" value=""></input>
+
+
                                         </tbody>
                                     </table>
                                     <button id="enviar" type="submit" class="btn btn-warning enviar" name="enviar" value="enviar" style="display:none"></button>
@@ -262,7 +274,14 @@ if (isset($_SESSION['usuario'])) {
 
             <?php }
             } ?>
+
+
+
+
         </section>
+
+
+        
 
 
     </body>
@@ -283,17 +302,17 @@ if (isset($_SESSION['usuario'])) {
         tipoFacturaSelect.addEventListener('change', function() {
             const selectedOption = this.value;
 
-            if (selectedOption === 'COMPLETA') {
+            if (selectedOption === 'PARCIAL') {
                 // Deshabilitar los campos de la segunda tabla
                 const inputFields = infoproductosTable.getElementsByTagName('input');
                 for (let i = 0; i < inputFields.length; i++) {
-                    inputFields[i].readOnly = true;
+                    inputFields[i].readOnly = false;
                 }
-            } else if (selectedOption === 'PARCIAL') {
+            } else if (selectedOption === 'COMPLETA') {
                 // Habilitar los campos de la segunda tabla
                 const inputFields = infoproductosTable.getElementsByTagName('input');
                 for (let i = 0; i < inputFields.length; i++) {
-                    inputFields[i].readOnly = false;
+                    inputFields[i].readOnly = true;
                 }
             }
         });
@@ -324,6 +343,8 @@ if (isset($_SESSION['usuario'])) {
             });
         });
     </script>
+
+    
 
 
     </html>

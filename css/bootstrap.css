@@ -11869,3 +11869,11 @@ padding-left: 0px!important;
     background-color: #ff0000;
     width: 100%;
   }
+
+  #mtable_filter{
+    margin-bottom: 30px!important;
+  }
+
+  .dataTables_filter{
+    margin-bottom: 30px!important;
+  }

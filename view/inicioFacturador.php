@@ -26,7 +26,21 @@ if (isset($_SESSION['usuario'])) {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.20/dist/sweetalert2.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.20/dist/sweetalert2.min.css">
 
+    <!-- para exportar documentos -->
+    <!-- <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" />
+        <link href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css" rel="stylesheet" /> -->
+
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <!-- <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script> -->
+
   </head>
+
 
 
   <body>
@@ -37,6 +51,9 @@ if (isset($_SESSION['usuario'])) {
       </div>
 
 
+      <div class="container" style="text-align: center;">
+        <button class="btn btn-outline-danger" onclick="window.location.reload();">Recargar Web</button>
+      </div>
 
 
 
@@ -48,7 +65,7 @@ if (isset($_SESSION['usuario'])) {
             <div class="col-md-12">
 
               <!-- tbl info de productos -->
-              <table class="table table-bordered dt-responsive table-hover display nowrap" id="infoproductos" cellspacing="0" style="text-align: center;">
+              <table class="table table-bordered dt-responsive table-hover display nowrap" id="mtable" cellspacing="0" style="text-align: center;">
                 <thead>
                   <tr class="encabezado table-dark">
                     <th scope="col">Factura</th>
@@ -57,6 +74,7 @@ if (isset($_SESSION['usuario'])) {
                     <th scope="col">Nombre</th>
                     <th scope="col">Tipo Factura</th>
                     <th scope="col">Acciones</th>
+
                   </tr>
                 </thead>
 
@@ -72,11 +90,12 @@ if (isset($_SESSION['usuario'])) {
                       <td><?= $a['usuario'] ?></td>
                       <td><?= $a['nombre'] ?></td>
                       <td><?= $a['TIPODEFACTURA'] ?></td>
-
-
-                      <td><!-- Button trigger modal -->
-                        <input name="ver" type="button" class="btn btn-warning ver-btn" data-bs-toggle="modal" data-bs-target="#exampleModal" data-factura="<?= $a['factura'] ?>" value="VER"></input>
+                      <td>
+                        <!-- Button trigger modal -->
+                        <input name="ver" type="button" class="btn btn-warning ver-btn" data-bs-toggle="modal" data-bs-target="#exampleModal" data-factura="<?= $a['factura'] ?>" data-id="<?= $a['id'] ?>" value="VER"></input>
                       </td>
+
+
 
                     </tr>
                   <?php
@@ -97,6 +116,10 @@ if (isset($_SESSION['usuario'])) {
         </div>
 
 
+
+
+
+
         <!-- Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
           <div class="modal-dialog modal-dialog-scrollable modal-fullscreen">
@@ -110,74 +133,21 @@ if (isset($_SESSION['usuario'])) {
 
 
 
-                <?php
-                $F = new funciones;
-                // if (isset($_POST['consultar'])) {
-                $factura =  $a['factura'];
-                echo $factura;
-                if (count($F->filtrarFactura($factura)) !== 0) { ?>
-                  <div class="">
-                    <div class="text-right mt-3">
-                      <div class="col-md-12">
-                        <!-- tbl info de productos -->
-                        <table class="table table-bordered dt-responsive table-hover display nowrap" id="infodetallefactura" cellspacing="0" style="text-align: center;">
-                          <thead>
-                            <tr class="encabezado table-dark">
-                              <th scope="col">Factura</th>
-                              <th scope="col">Codigo</th>
-                              <th scope="col">fechaRecibido</th>
-                              <th scope="col">fechaEnviado</th>
-                              <th scope="col">Usuario</th>
-                              <th scope="col">Nombre</th>
-                              <th scope="col">Tipo Factura</th>
-                              <th scope="col">PRODUCTO</th>
-                              <th scope="col">cantidad</th>
-                              <th scope="col">cantidadOriginal</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <?php
-                            $count = 0;
-                            foreach ($F->filtrarFactura($factura) as $a) :
-                            ?>
-                              <tr>
-                                <td><?= $a['factura'] ?></td>
-                                <td><?= $a['codigo'] ?></td>
-                                <td><?= $a['fechaRecibido'] ?></td>
-                                <td><?= $a['fechaEnviado'] ?></td>
-                                <td><?= $a['usuario'] ?></td>
-                                <td><?= $a['nombre'] ?></td>
-                                <td><?= $a['TIPODEFACTURA'] ?></td>
-                                <td><?= $a['PRODUCTO'] ?></td>
-                                <td><?= round($a['cantidad']) ?></td>
-                                <td><?= round($a['cantidadOriginal']) ?></td>
-                              </tr>
-                            <?php
-                              $count++;
-                            endforeach;
-                            // Generar una nueva variable con el total de iteraciones
-                            ?>
-                            <?php $totalRecorridos = $count; ?>
-                            <input type="hidden" name="recorrido" value=<?php echo $totalRecorridos = $count; ?>></input>
-                            <input type="hidden" name="cantidad" value=<?php echo $totalRecorridos = $count; ?>></input>
-                            <input type="hidden" name="cantidadOriginal" value=<?php echo $totalRecorridos = $count; ?>></input>
-                          </tbody>
-                        </table>
-                      <?php
-                    } ?>
-                      </div>
-                    </div>
-                  </div>
-
-
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+
               </div>
             </div>
           </div>
         </div>
+
+
+
+
+
+  </html>
+
 
   </body>
 
@@ -196,21 +166,67 @@ if (isset($_SESSION['usuario'])) {
 
   <!-- Agrega este código dentro de la etiqueta <script> existente -->
   <script>
-    $(document).ready(function() {
-      $('.ver-btn').on('click', function() {
-        var factura = $(this).data('factura');
-        $('#exampleModalLabel').text('Factura: ' + factura);
+    $('.ver-btn').on('click', function() {
+      var factura = $(this).data('factura');
+      var id = $(this).data('id');
+      $('#exampleModalLabel').text('Factura: ' + factura);
 
-        // Aquí puedes realizar una llamada AJAX para cargar más información relacionada con la factura seleccionada
-        // y actualizar el contenido del modal según tus necesidades.
+      // Realizar la consulta AJAX
+      $.ajax({
+        url: 'consultaFactura.php', // Ruta del archivo PHP que realizará la consulta
+        method: 'POST',
+        data: {
+          factura: factura
+        }, // Enviar el número de factura como dato POST
+        success: function(response) {
+          // Colocar la respuesta en el cuerpo del modal
+          $('.modal-body').html(response);
+        },
+        error: function() {
+          alert('Error al realizar la consulta');
+        }
       });
     });
   </script>
 
+  <!-- Inicio DataTable -->
+<script type="text/javascript">
+  $(document).ready(function() {
+    var lenguaje = $('#mtable').DataTable({
+      info: false,
+      select: true,
+      destroy: true,
+      jQueryUI: true,
+      paginate: true,
+      iDisplayLength: 30,
+      searching: true,
+      dom: 'Bfrtip',
+      buttons: [
+        // 'copy', 'csv', 'excel'
+      ],
+      language: {
+        lengthMenu: 'Mostrar _MENU_ registros por página.',
+        zeroRecords: 'Lo sentimos. No se encontraron registros.',
+        info: 'Mostrando: _START_ de _END_ - Total registros: _TOTAL_',
+        infoEmpty: 'No hay registros aún.',
+        infoFiltered: '(filtrados de un total de _MAX_ registros)',
+        search: 'Búsqueda',
+        LoadingRecords: 'Cargando ...',
+        Processing: 'Procesando...',
+        SearchPlaceholder: 'Comience a teclear...',
+        paginate: {
+          previous: 'Anterior',
+          next: 'Siguiente',
+        }
+      }
+    });
+  });
+</script>
+<!-- Fin DataTable -->
 
 
 
-  </html>
+
 
 <?php } else { ?>
   <script languaje "JavaScript">

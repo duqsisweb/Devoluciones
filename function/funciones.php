@@ -49,8 +49,8 @@ class funciones
     {
         include '../conexionbd.php';
 
-        $data = odbc_exec($conexion, "SELECT DISTINCT factura, codigo, usuario, nombre, TIPODEFACTURA
-        FROM [DUQUESA].[dbo].[DistribucionDevoluciones]");
+        $data = odbc_exec($conexion, "SELECT DISTINCT factura, codigo, usuario, nombre, TIPODEFACTURA, notaCredito
+        FROM [DUQUESA].[dbo].[DistribucionDevoluciones] where notaCredito = '0'");
         while ($Element = odbc_fetch_array($data)) {
             $arr[] = $Element;
         }
@@ -63,8 +63,20 @@ class funciones
     public static function filtrarFactura($factura)
     {
         include '../conexionbd.php';
-
+    
         $data = odbc_exec($conexion, "SELECT factura, codigo, fechaRecibido, fechaEnviado, usuario, nombre, TIPODEFACTURA, PRODUCTO, cantidad, cantidadOriginal
+            FROM [DUQUESA].[dbo].[DistribucionDevoluciones] where factura = '$factura'");
+        while ($Element = odbc_fetch_array($data)) {
+            $arr[] = $Element;
+        }
+        return $arr;
+    }
+
+    public static function filtrarFacuraNotacredito($factura)
+    {
+        include '../conexionbd.php';
+
+        $data = odbc_exec($conexion, "SELECT DISTINCT factura, codigo, usuario, nombre, TIPODEFACTURA, notaCredito
         FROM [DUQUESA].[dbo].[DistribucionDevoluciones] where factura = '$factura'");
         while ($Element = odbc_fetch_array($data)) {
             $arr[] = $Element;
