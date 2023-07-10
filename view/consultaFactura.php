@@ -19,10 +19,13 @@ if (isset($_POST['factura'])) {
     $Usuarionotacredito = $_SESSION['usuario'];
     $fechanotacredito = $_SESSION['fechanotacredito'];
     $factura = $_POST['factura'];
-
+    
+    $SIGConsulta = odbc_exec($conexion, "UPDATE [sigcruge].[dbo].[servicio_cliente]
+    SET notaCredito = '$notaCredito' WHERE factura = '$factura'");
+    
     $Consulta = odbc_exec($conexion, "UPDATE [DUQUESA].[dbo].[DistribucionDevoluciones]
     SET notaCredito = '$notaCredito', Usuarionotacredito = '$Usuarionotacredito', fechanotacredito = Getdate()	
-    WHERE factura = '$factura';");
+    WHERE factura = '$factura'");
 
     // redireccion luego de hacer la consulta
     header('Location: /Devoluciones/view/inicioFacturador.php');
@@ -40,9 +43,10 @@ if (isset($_POST['factura'])) {
           <thead>
             <tr class="encabezado table-dark">
               <th scope="col">Factura</th>
-              <th scope="col">Codigo</th>
+              <th scope="col">Código</th>
               <th scope="col">Tipo Factura</th>
-              <th scope="col">Prodcuto</th>
+              <th scope="col">Producto</th>
+              <th scope="col">Nombre</th>
               <th scope="col">Cantidad</th>
               <th scope="col">C Original</th>
             </tr>
@@ -54,6 +58,7 @@ if (isset($_POST['factura'])) {
                 <td><?= $fila['codigo'] ?></td>
                 <td><?= $fila['TIPODEFACTURA'] ?></td>
                 <td><?= $fila['PRODUCTO'] ?></td>
+                <td><?= $fila['Nombre_Producto_Mvto'] ?></td>
                 <td><?= round($fila['cantidad']) ?></td>
                 <td><?= round($fila['cantidadOriginal']) ?></td>
               </tr>

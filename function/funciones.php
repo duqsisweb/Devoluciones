@@ -57,14 +57,11 @@ class funciones
         return $arr;
     }
 
-
-
-
     public static function filtrarFactura($factura)
     {
         include '../conexionbd.php';
     
-        $data = odbc_exec($conexion, "SELECT factura, codigo, fechaRecibido, fechaEnviado, usuario, nombre, TIPODEFACTURA, PRODUCTO, cantidad, cantidadOriginal
+        $data = odbc_exec($conexion, "SELECT factura, codigo, fechaRecibido, fechaEnviado, usuario, nombre, TIPODEFACTURA, PRODUCTO, Nombre_Producto_Mvto, cantidad, cantidadOriginal
             FROM [DUQUESA].[dbo].[DistribucionDevoluciones] where factura = '$factura'");
         while ($Element = odbc_fetch_array($data)) {
             $arr[] = $Element;

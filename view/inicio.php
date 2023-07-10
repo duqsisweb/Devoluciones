@@ -73,14 +73,15 @@ if (isset($_SESSION['usuario'])) {
                 for ($i = 0; $i < $totalRecorridos; $i++) {
 
                     $PRODUCTO = $_POST['PRODUCTO' . $i];
+                    $Nombre_Producto_Mvto = $_POST['Nombre_Producto_Mvto' . $i];
                     $cantidad = $_POST['cantidad' . $i];
                     $cantidadOriginal = $_POST['cantidadOriginal' . $i];
 
-                    // echo "INSERT INTO DUQUESA..DistribucionDevoluciones (factura, codigo, fechaRecibido, fechaEnviado, usuario, NOMBRE, TIPODEFACTURA, PRODUCTO, cantidad, cantidadOriginal ) 
-                    // VALUES ('$factura', '$codigoDevolucion', '$fechaRecibido', Getdate(), '$usuario', '$nombre', '$TIPODEFACTURA', '$PRODUCTO', '$cantidad', '$cantidadOriginal')";
+                    // echo "INSERT INTO DUQUESA..DistribucionDevoluciones (factura, codigo, fechaRecibido, fechaEnviado, usuario, NOMBRE, TIPODEFACTURA, PRODUCTO, Nombre_Producto_Mvto, cantidad, cantidadOriginal, notaCredito, fechanotacredito, Usuarionotacredito ) 
+                    // VALUES ('$factura', '$codigoDevolucion', '$fechaRecibido', Getdate(), '$usuario', '$nombre', '$TIPODEFACTURA', '$PRODUCTO', '$Nombre_Producto_Mvto', '$cantidad', '$cantidadOriginal', '$notaCredito', '$fechanotacredito', '$Usuarionotacredito')";
 
-                    $Consulta = odbc_exec($conexion, "INSERT INTO DUQUESA..DistribucionDevoluciones (factura, codigo, fechaRecibido, fechaEnviado, usuario, NOMBRE, TIPODEFACTURA, PRODUCTO, cantidad, cantidadOriginal, notaCredito, fechanotacredito, Usuarionotacredito ) 
-                    VALUES ('$factura', '$codigoDevolucion', '$fechaRecibido', Getdate(), '$usuario', '$nombre', '$TIPODEFACTURA', '$PRODUCTO', '$cantidad', '$cantidadOriginal', '$notaCredito', '$fechanotacredito', '$Usuarionotacredito' )");
+                    $Consulta = odbc_exec($conexion, "INSERT INTO DUQUESA..DistribucionDevoluciones (factura, codigo, fechaRecibido, fechaEnviado, usuario, NOMBRE, TIPODEFACTURA, PRODUCTO, Nombre_Producto_Mvto, cantidad, cantidadOriginal, notaCredito, fechanotacredito, Usuarionotacredito ) 
+                    VALUES ('$factura', '$codigoDevolucion', '$fechaRecibido', Getdate(), '$usuario', '$nombre', '$TIPODEFACTURA', '$PRODUCTO', '$Nombre_Producto_Mvto', '$cantidad', '$cantidadOriginal', '$notaCredito', '$fechanotacredito', '$Usuarionotacredito' )");
                 }
             }
             ?>
@@ -138,7 +139,7 @@ if (isset($_SESSION['usuario'])) {
                                                 <tr>
                                                     <td style="width:10%"><?= $a['codigo'] ?></td>
                                                     <td style="width:10%"><?= $a['nit'] ?></td>
-                                                    <td style="width:10%"><?= $a['nombre'] ?></td>
+                                                    <td style="width:10%"><?= utf8_encode($a['nombre']) ?></td>
 
                                                     <input type="hidden" name="cod" value=<?php echo ($a['codigo']) ?>></input>
                                                 </tr>
@@ -219,7 +220,9 @@ if (isset($_SESSION['usuario'])) {
                                                     <td><?= utf8_encode($a['descripcion']) ?></td>
                                                     <td><?= utf8_encode($a['PRODUCTO']) ?></td>
                                                     <td><?= utf8_encode($a['Nombre_Producto_Mvto']) ?></td>
-                                                    <td><input class="caracteres" type="number" name="cantidad<?php echo $count; ?>" value="<?php echo round(($a['cantidad'])) ?>" readonly></input></td>
+                                                    <td>
+                                                        <input class="caracteres" type="number" name="cantidad<?php echo $count; ?>" value="<?php echo round(($a['cantidad'])) ?>" autocomplete="off" readonly oninput="validateQuantity(this, <?php echo round(($a['cantidad'])) ?>)">
+                                                    </td>
 
                                                     <input type="hidden" name="PRODUCTO<?php echo $count; ?>" value="<?php echo ($a['PRODUCTO']) ?>"></input>
                                                     <input type="hidden" name="Nombre_Producto_Mvto<?php echo $count; ?>" value="<?php echo ($a['Nombre_Producto_Mvto']) ?>"></input>
@@ -281,12 +284,27 @@ if (isset($_SESSION['usuario'])) {
         </section>
 
 
-        
+
 
 
     </body>
 
 
+    <script>
+   
+
+    function validateQuantity(input, initialValue) {
+        var enteredValue = parseInt(input.value);
+        if (enteredValue > initialValue) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No es posible digitar una cantidad mayor a ' + initialValue
+            });
+            input.value = initialValue;
+        }
+    }
+</script>
 
     <script>
         jQuery('.caracteres').keypress(function(tecla) {
@@ -344,7 +362,7 @@ if (isset($_SESSION['usuario'])) {
         });
     </script>
 
-    
+
 
 
     </html>

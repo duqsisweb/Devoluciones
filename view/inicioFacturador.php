@@ -52,7 +52,7 @@ if (isset($_SESSION['usuario'])) {
 
 
       <div class="container" style="text-align: center;">
-        <button class="btn btn-outline-danger" onclick="window.location.reload();">Recargar Web</button>
+        <button class="btn btn-outline-danger" onclick="window.location.reload();">Actualizar registros</button>
       </div>
 
 
@@ -69,7 +69,7 @@ if (isset($_SESSION['usuario'])) {
                 <thead>
                   <tr class="encabezado table-dark">
                     <th scope="col">Factura</th>
-                    <th scope="col">Codigo</th>
+                    <th scope="col">Código</th>
                     <th scope="col">Usuario</th>
                     <th scope="col">Nombre</th>
                     <th scope="col">Tipo Factura</th>
