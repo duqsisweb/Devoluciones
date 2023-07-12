@@ -13,24 +13,28 @@ if ($_POST['iniciar']) {
     $typeUser = $_POST['typeUser'];
     $result;
 
-    $resul = odbc_exec($conexion, "SELECT MV.NOMBRE, RTRIM(MV.CODUSUARIO) AS CODUSUARIO, RTRIM(MV.PASSWORD) AS CLAVE FROM CONTROL_OFIMAEnterprise..MTUSUARIO AS MV WHERE (MV.CODUSUARIO = '$usuario' AND MV.CODUSUARIO IN ('HRODRIGUEZ','JQUINTERO', 'LPACHON', 'SVERA', 'YTANGARIFE', 'DHENAO', 'JYDIAZ', 'YCHAVERRA', 'SGUILLEN', 'JCASILIMAS', 'YFGONZALEZ' , 'ESOLANO', 'YALONSO')) AND MV.PASSWORD = '$password'") or die(exit("Error al ejecutar consulta"));
+    $resul = odbc_exec($conexion, "SELECT RTRIM(US.name) AS NOMBRE ,RTRIM(US.email) AS EMAIL ,RTRIM(US.password) AS CLAVE,[estadopassword] FROM [DUQUESA].[dbo].[users] AS US 
+    WHERE  (US.email = '$usuario' AND US.email IN ('karen.pimentel.m@gmail.com')) AND US.password = '$password'") or die(exit("Error al ejecutar consulta"));
+
     $Nombre = odbc_result($resul, 'NOMBRE');
-    $usua = rtrim(odbc_result($resul, 'CODUSUARIO'));
+    $usua = rtrim(odbc_result($resul, 'EMAIL'));
     $pass = rtrim(odbc_result($resul, 'CLAVE'));
 
     $usua = strtoupper($usua);
     $usuario = strtoupper($usuario);
 
-    if ($usua == $usuario && $pass == $password) {
+    if (strcasecmp($usua, $usuario) == 0 && strcasecmp($pass, $password) == 0) {
         session_start();
         $_SESSION['usuario'] = $usua;
         $_SESSION['NOMBRE'] = $Nombre;
 
         // Asignar perfil/rol basado en el valor de $user
-        if ($usua == 'YFGONZALEZ') {
+        if ($usua == '') {
             $perfil = 'perfil1';
-        } elseif ($usua == 'YALONSO') {
+        } elseif ($usua == '') {
             $perfil = 'perfil2';
+        } elseif ($usua == 'karen.pimentel.m@gmail.com') {
+            $perfil = 'perfil3';
         } else {
             // Asignar un perfil predeterminado si el usuario no coincide con ninguno de los perfiles anteriores
             $perfil = 'perfil_predeterminado';
@@ -44,11 +48,15 @@ if ($_POST['iniciar']) {
         } elseif ($perfil == 'perfil2') {
             header("Location: view/inicioFacturador.php");
             exit();
+        } elseif ($perfil == 'perfil3') {
+            header("Location: view/administradordev.php");
+            exit();
         } else {
             // Redirigir a una vista predeterminada si el perfil no coincide con ninguno de los perfiles anteriores
-            header("Location: view/vista_predeterminada.php");
+            header("Location: view/administradordev.php");
             exit();
         }
+        
         
         ?><script>
             alert("Hola <?php echo $Nombre ?>");
@@ -68,3 +76,6 @@ if ($_POST['iniciar']) {
     </script><?php
 }
 ?>
+
+
+

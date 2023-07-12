@@ -291,20 +291,18 @@ if (isset($_SESSION['usuario'])) {
 
 
     <script>
-   
-
-    function validateQuantity(input, initialValue) {
-        var enteredValue = parseInt(input.value);
-        if (enteredValue > initialValue) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'No es posible digitar una cantidad mayor a ' + initialValue
-            });
-            input.value = initialValue;
+        function validateQuantity(input, initialValue) {
+            var enteredValue = parseInt(input.value);
+            if (enteredValue > initialValue) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'No es posible digitar una cantidad mayor a ' + initialValue
+                });
+                input.value = initialValue;
+            }
         }
-    }
-</script>
+    </script>
 
     <script>
         jQuery('.caracteres').keypress(function(tecla) {

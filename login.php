@@ -28,7 +28,7 @@ error_reporting(0); ?>
                     <form autocomplete="off" action="aute.php" method="POST">
                         <div class="mb-3">
                             <label for="exampleInputEmail1" class="form-label" id="textoformulario">Usuario</label>
-                            <input type="text" class="form-control" id="" aria-describedby="" name="usuario" autocomplete="off" required>
+                            <input type="email" class="form-control" id="" aria-describedby="" name="usuario" autocomplete="off" required>
                             <div id="textoformulario" class="form-text"></div>
                         </div>
                         <div class="mb-3">
