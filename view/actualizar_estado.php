@@ -11,7 +11,7 @@ if (isset($_POST['estado']) && isset($_POST['email'])) {
 
   $email = $_POST['email'];
 
-  $consulta = odbc_prepare($conexion, "UPDATE [DUQUESA].[dbo].[users] SET Estado = ? WHERE email = ?");
+  $consulta = odbc_prepare($conexion, "UPDATE [DUQUESA].[dbo].[users] SET Estado = '$estado' WHERE email ='$email'");
   
   if ($consulta) {
     $result = odbc_execute($consulta, array($estado, $email));

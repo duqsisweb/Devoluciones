@@ -20,8 +20,8 @@ if (isset($_POST['factura'])) {
     $fechanotacredito = $_SESSION['fechanotacredito'];
     $factura = $_POST['factura'];
     
-    $SIGConsulta = odbc_exec($conexion, "UPDATE [sigcruge].[dbo].[servicio_cliente]
-    SET notaCredito = '$notaCredito' WHERE factura = '$factura'");
+    // $SIGConsulta = odbc_exec($conexion, "UPDATE [sigcruge].[dbo].[servicio_cliente]
+    // SET notaCredito = '$notaCredito' WHERE factura = '$factura'");
     
     $Consulta = odbc_exec($conexion, "UPDATE [DUQUESA].[dbo].[DistribucionDevoluciones]
     SET notaCredito = '$notaCredito', Usuarionotacredito = '$Usuarionotacredito', fechanotacredito = Getdate()	

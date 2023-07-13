@@ -164,7 +164,7 @@ if (isset($_SESSION['usuario'])) {
   </script>
 
 
-  <!-- Agrega este código dentro de la etiqueta <script> existente -->
+
   <script>
     $('.ver-btn').on('click', function() {
       var factura = $(this).data('factura');

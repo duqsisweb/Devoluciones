@@ -10,7 +10,7 @@ if (isset($_POST['iniciar'])) {
 
     $resul = odbc_exec($conexion, "SELECT RTRIM(US.name) AS NOMBRE, RTRIM(US.email) AS EMAIL, RTRIM(US.password) AS CLAVE, [estadopassword], [sistemaClasificador]
     FROM [DUQUESA].[dbo].[users] AS US
-    WHERE US.email = '$usuario'") or die(exit("Error al ejecutar consulta"));
+    WHERE US.email = '$usuario' and Estado = '1' ") or die(exit("Error al ejecutar consulta"));
 
     if (odbc_num_rows($resul) > 0) {
         $row = odbc_fetch_array($resul);

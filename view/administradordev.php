@@ -146,102 +146,94 @@ if (isset($_SESSION['usuario'])) {
 
 
 
+
           <?php
           if (isset($_POST['enviarEstado'])) {
-
-
             include '../conexionbd.php';
-            $estado = $_POST['estado'];
-
-            if ($estado == "on") {
-              $estado = 1;
-            } else {
-              $estado = 0;
+          
+            $usuarios = $_POST['usuarios'];
+          
+            foreach ($usuarios as $usuario) {
+              $estado = isset($usuario['Estado']) ? 1 : 0;
+              $email = $usuario['email'];
+          
+              // echo "UPDATE [DUQUESA].[dbo].[users] SET Estado = '$estado' WHERE email = '$email'";
+              // Ejecutar la consulta de actualización
+              $consulta = odbc_exec($conexion, "UPDATE [DUQUESA].[dbo].[users] SET Estado = '$estado' WHERE email = '$email'");
+              if (!$consulta) {
+                // Error al ejecutar la consulta
+                echo "Error al ejecutar la consulta de actualización";
+              }
             }
-
-            $email = $_POST['email']; // 
-            echo "UPDATE [DUQUESA].[dbo].[users] SET Estado = '$estado' WHERE email = '$email'";
-            // $consulta = odbc_prepare($conexion, "UPDATE [DUQUESA].[dbo].[users] SET Estado = '$estado' WHERE email = '$email'");
-            // $result = odbc_execute($consulta, array($estado, $email));
-
+          
             header('Location: /Devoluciones/view/administradordev.php');
-            exit(); // Asegúrar de agregar exit() después de la redirección
+            exit(); // Asegúrate de agregar exit() después de la redirección
           }
+          
           ?>
 
 
 
-          <div class="col-md-8">
-            <div>
-              <h4>Listado de usuarios</h4>
-            </div>
 
+  <div class="col-md-8">
+  <div>
+    <h4>Listado de usuarios</h4>
+  </div>
 
-            <form method="POST">
-              <?php
-              $F = new funciones;
-              if (count($F->usuarios()) !== 0) { ?>
-                <!-- tbl info de productos -->
-                <table class="table table-bordered dt-responsive table-hover display nowrap" id="mtable" cellspacing="0" style="text-align: center;">
-                  <thead>
-                    <tr class="encabezado table-dark">
-                      <th scope="col">Nombre</th>
-                      <th scope="col">Email</th>
-                      <th scope="col">Rol</th>
-                      <th scope="col">Estado</th>
-
-                    </tr>
-                  </thead>
-
-
-                  <tbody style="text-align: center;">
-                    <?php
-                    foreach ($F->usuarios() as $a) :
-                    ?>
-                      <tr>
-                        <td><?= utf8_encode($a['name']) ?></td>
-                        <td><?= $a['email'] ?></td>
-                        <td><?= $a['sistemaClasificador'] ?></td>
-                        <td>
-                          <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" name="estado" value="<?= $a['Estado'] ?>" <?php if ($a['Estado'] == 1) echo 'checked'; ?>>
-                            <label class="form-check-label" for="flexSwitchCheckDefault"><?= ($a['Estado'] == 1) ? 'on' : 'off'; ?></label>
-                          </div>
-                        </td>
-
-
-                        <input type="hidden" name="email" value="<?php echo ($a['email']) ?>"></input>
-                        <input type="hidden" name="estado" value="<?php echo ($a['estado']) ?>"></input>
-                      </tr>
-                    <?php
-                    endforeach;
-                    // Generar una nueva variable con el total de iteraciones
-                    ?>
-                  </tbody>
-                </table>
-              <?php
-              } ?>
-
-
-
-          </div>
-          <button id="enviarEstado" type="submit" class="btn btn-warning enviarEstado" name="enviarEstado" value="enviarEstado" style="display:none"></button>
-          </form>
-
-          <div class="container">
-            <div class="row">
-              <div class="col-4 col-sm-4 col-md-4 col-lg-4 col-xl-4"></div>
-              <div class="col-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
-                <div class="text-center">
-                  <button id="" class="btn btn-success showAlertButtonestado" name="enviarEstado">Guardar</button>
+  <form method="POST" action="">
+    <?php
+    $F = new funciones;
+    if (count($F->usuarios()) !== 0) { ?>
+      <table class="table table-bordered dt-responsive table-hover display nowrap" id="mtable" cellspacing="0" style="text-align: center;">
+        <thead>
+          <tr class="encabezado table-dark" data-id="1">
+            <th scope="col">Nombre</th>
+            <th scope="col">Email</th>
+            <th scope="col">Rol</th>
+            <th scope="col">Estado</th>
+          </tr>
+        </thead>
+        <tbody style="text-align: center;">
+          <?php
+          $count = 0;
+          foreach ($F->usuarios() as $a) :
+            $count++;
+          ?>
+            <tr>
+              <td><?= utf8_encode($a['name']) ?></td>
+              <td><?= $a['email'] ?></td>
+              <td><?= $a['sistemaClasificador'] ?></td>
+              <td>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault<?= $count ?>" name="usuarios[<?= $count ?>][Estado]" data-id="<?= $a['id'] ?>" value="<?= $a['Estado'] ?>" <?php if ($a['Estado'] == 1) echo 'checked'; ?>>
+                  <label class="form-check-label" for="flexSwitchCheckDefault<?= $count ?>"><?= ($a['Estado'] == 1) ? 'on' : 'off'; ?></label>
+                  <input type="hidden" name="usuarios[<?= $count ?>][email]" value="<?= $a['email'] ?>">
                 </div>
-              </div>
-              <div class="col-4 col-sm-4 col-md-4 col-lg-4 col-xl-4"></div>
-            </div>
-          </div>
+              </td>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    <?php } ?>
+    <button id="" type="submit" class="btn btn-warning enviarEstado" name="enviarEstado" value="" style="display:none"></button>
+  </form>
 
+  <div class="container">
+    <div class="row">
+      <div class="col-4 col-sm-4 col-md-4 col-lg-4 col-xl-4"></div>
+      <div class="col-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+        <div class="text-center">
+          <button id="" class="btn btn-success showAlertButtonestado" name="">Guardar</button>
         </div>
       </div>
+      <div class="col-4 col-sm-4 col-md-4 col-lg-4 col-xl-4"></div>
+    </div>
+  </div>
+</div>
+
+
+
+
 
 
 
@@ -298,18 +290,42 @@ if (isset($_SESSION['usuario'])) {
             Swal.fire('Los cambios no se guardaron', '', 'info');
           }
         });
+
       });
     });
   </script>
 
 
 
+  <script>
+    $(document).ready(function() {
+      $('.form-check-input').change(function() {
+        var rowId = $(this).data('id');
+        var estado = $(this).prop('checked') ? 1 : 0;
+        var email = $('td:eq(1)', $(this).closest('tr')).text();
 
+        // Actualizar la tabla visualmente
+        $('label[for="flexSwitchCheckDefault' + rowId + '"]').text(estado ? 'on' : 'off');
 
-
-
-
-
+        // Enviar el registro modificado al servidor
+        $.ajax({
+          url: 'procesar.php', // Ruta al archivo PHP que procesa el estado
+          method: 'POST',
+          data: {
+            rowId: rowId,
+            estado: estado,
+            email: email
+          },
+          success: function(response) {
+            // Manejar la respuesta del servidor si es necesario
+          },
+          error: function() {
+            // Manejar errores en caso de fallo en la solicitud AJAX
+          }
+        });
+      });
+    });
+  </script>
 
 
 <?php } else { ?>
