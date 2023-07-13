@@ -1,81 +1,93 @@
 <?php
 header('Content-Type: text/html; charset=UTF-8');
-error_reporting(0);
+// error_reporting(0);
 
-if ($_POST['iniciar']) {
-
-    header("Cache-control: private");
+if (isset($_POST['iniciar'])) {
     include("./conexionbd.php");
-    $usuario1 = utf8_decode($_POST['usuario']);
-    $usuario = rtrim($usuario1);
-    $password1 = $_POST['password'];
-    $password = rtrim($password1);
-    $typeUser = $_POST['typeUser'];
-    $result;
 
-    $resul = odbc_exec($conexion, "SELECT RTRIM(US.name) AS NOMBRE ,RTRIM(US.email) AS EMAIL ,RTRIM(US.password) AS CLAVE,[estadopassword] FROM [DUQUESA].[dbo].[users] AS US 
-    WHERE  (US.email = '$usuario' AND US.email IN ('karen.pimentel.m@gmail.com')) AND US.password = '$password'") or die(exit("Error al ejecutar consulta"));
+    $usuario = rtrim($_POST['usuario']);
+    $password = rtrim($_POST['password']);
 
-    $Nombre = odbc_result($resul, 'NOMBRE');
-    $usua = rtrim(odbc_result($resul, 'EMAIL'));
-    $pass = rtrim(odbc_result($resul, 'CLAVE'));
+    $resul = odbc_exec($conexion, "SELECT RTRIM(US.name) AS NOMBRE, RTRIM(US.email) AS EMAIL, RTRIM(US.password) AS CLAVE, [estadopassword], [sistemaClasificador]
+    FROM [DUQUESA].[dbo].[users] AS US
+    WHERE US.email = '$usuario'") or die(exit("Error al ejecutar consulta"));
 
-    $usua = strtoupper($usua);
-    $usuario = strtoupper($usuario);
+    if (odbc_num_rows($resul) > 0) {
+        $row = odbc_fetch_array($resul);
+        $Nombre = $row['NOMBRE'];
+        $usua = $row['EMAIL'];
+        $pass = $row['CLAVE'];
+        $sistemaClasificador = $row['sistemaClasificador'];
 
-    if (strcasecmp($usua, $usuario) == 0 && strcasecmp($pass, $password) == 0) {
-        session_start();
-        $_SESSION['usuario'] = $usua;
-        $_SESSION['NOMBRE'] = $Nombre;
+        if (($usua == 'karen.pimentel.m@gmail.com' && $password == $pass) || password_verify($password, $pass)) {
+            // Contraseña válida
+            session_start();
+            $_SESSION['usuario'] = $usua;
+            $_SESSION['NOMBRE'] = $Nombre;
 
-        // Asignar perfil/rol basado en el valor de $user
-        if ($usua == '') {
-            $perfil = 'perfil1';
-        } elseif ($usua == '') {
-            $perfil = 'perfil2';
-        } elseif ($usua == 'karen.pimentel.m@gmail.com') {
-            $perfil = 'perfil3';
+            // Asignar perfil/rol basado en el valor de $sistemaClasificador
+            if ($sistemaClasificador == 'OPERARIO') {
+                $perfil = 'perfil1';
+            } elseif ($sistemaClasificador == 'FACTURADOR') {
+                $perfil = 'perfil2';
+            } elseif ($usua == 'karen.pimentel.m@gmail.com') {
+                $perfil = 'perfil3';
+            } else {
+                // Asignar un perfil predeterminado si el valor de sistemaClasificador no coincide con ninguno de los perfiles anteriores
+                $perfil = 'perfil_predeterminado';
+            }
+
+            $_SESSION['perfil'] = $perfil;
+
+            switch ($perfil) {
+                case 'perfil1':
+                    header("Location: view/inicio.php");
+                    exit();
+                    break;
+                case 'perfil2':
+                    header("Location: view/inicioFacturador.php");
+                    exit();
+                    break;
+                case 'perfil3':
+                    header("Location: view/administradordev.php");
+                    exit();
+                    break;
+                default:
+                    // Redirigir a una vista predeterminada si el perfil no coincide con ninguno de los perfiles anteriores
+                    header("Location: view/administradordev.php");
+                    exit();
+                    break;
+            }
+
+            ?>
+            <script>
+                alert("Hola <?php echo $Nombre ?>");
+            </script>
+            <?php
         } else {
-            // Asignar un perfil predeterminado si el usuario no coincide con ninguno de los perfiles anteriores
-            $perfil = 'perfil_predeterminado';
+            // Contraseña incorrecta
+            ?>
+            <script>
+                alert("Credenciales incorrectas");
+                window.location.href = "login.php";
+            </script>
+            <?php
         }
-
-        $_SESSION['perfil'] = $perfil;
-
-        if ($perfil == 'perfil1') {
-            header("Location: view/inicio.php");
-            exit();
-        } elseif ($perfil == 'perfil2') {
-            header("Location: view/inicioFacturador.php");
-            exit();
-        } elseif ($perfil == 'perfil3') {
-            header("Location: view/administradordev.php");
-            exit();
-        } else {
-            // Redirigir a una vista predeterminada si el perfil no coincide con ninguno de los perfiles anteriores
-            header("Location: view/administradordev.php");
-            exit();
-        }
-        
-        
-        ?><script>
-            alert("Hola <?php echo $Nombre ?>");
-            // Puedes agregar aquí cualquier otro código JavaScript necesario
-        </script><?php
-        
     } else {
-        ?><script>
+        // No se encontró el usuario en la base de datos
+        ?>
+        <script>
             alert("Credenciales incorrectas");
             window.location.href = "login.php";
-        </script><?php
+        </script>
+        <?php
     }
 } else {
-    ?><script>
+    ?>
+    <script>
         alert("Ingreso Erroneo");
         window.location.href = "login.php";
-    </script><?php
+    </script>
+    <?php
 }
 ?>
-
-
-
