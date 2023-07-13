@@ -85,20 +85,26 @@ if (isset($_SESSION['usuario'])) {
         </div>
       </div>
 
+      <div>
+       <br>
+      </div>
 
+     
 
       <div class="container" style="margin-top: 60px;">
         <div class="row">
 
           <div class="col-md-4">
-            <div>
+            <div style="text-align: center;">
               <h4>Registro usuarios</h4>
             </div>
+
             <form method="POST">
               <div class="mb-3">
-                <label for="" class="form-label">Nombre</label>
-                <input name="name" type="text" class="form-control" id="" aria-describedby="" required>
+              <label for="name" class="form-label">Nombre</label>
+<input name="name" type="text" class="form-control" id="name" aria-describedby="" required>
               </div>
+
               <div class="mb-3">
                 <label for="" class="form-label">Correo Electrónico</label>
                 <input name="email" type="email" class="form-control" id="" aria-describedby="" autocomplete="off" required>
@@ -150,13 +156,13 @@ if (isset($_SESSION['usuario'])) {
           <?php
           if (isset($_POST['enviarEstado'])) {
             include '../conexionbd.php';
-          
+
             $usuarios = $_POST['usuarios'];
-          
+
             foreach ($usuarios as $usuario) {
               $estado = isset($usuario['Estado']) ? 1 : 0;
               $email = $usuario['email'];
-          
+
               // echo "UPDATE [DUQUESA].[dbo].[users] SET Estado = '$estado' WHERE email = '$email'";
               // Ejecutar la consulta de actualización
               $consulta = odbc_exec($conexion, "UPDATE [DUQUESA].[dbo].[users] SET Estado = '$estado' WHERE email = '$email'");
@@ -165,71 +171,71 @@ if (isset($_SESSION['usuario'])) {
                 echo "Error al ejecutar la consulta de actualización";
               }
             }
-          
-            header('Location: /Devoluciones/view/administradordev.php');
+
+            echo "<script>window.location.href = '/Devoluciones/view/administradordev.php';</script>";
             exit(); // Asegúrate de agregar exit() después de la redirección
           }
-          
+
           ?>
 
 
 
 
-  <div class="col-md-8">
-  <div>
-    <h4>Listado de usuarios</h4>
-  </div>
+          <div class="col-md-8">
+            <div style="text-align: center;">
+              <h4>Listado de usuarios</h4>
+            </div>
 
-  <form method="POST" action="">
-    <?php
-    $F = new funciones;
-    if (count($F->usuarios()) !== 0) { ?>
-      <table class="table table-bordered dt-responsive table-hover display nowrap" id="mtable" cellspacing="0" style="text-align: center;">
-        <thead>
-          <tr class="encabezado table-dark" data-id="1">
-            <th scope="col">Nombre</th>
-            <th scope="col">Email</th>
-            <th scope="col">Rol</th>
-            <th scope="col">Estado</th>
-          </tr>
-        </thead>
-        <tbody style="text-align: center;">
-          <?php
-          $count = 0;
-          foreach ($F->usuarios() as $a) :
-            $count++;
-          ?>
-            <tr>
-              <td><?= utf8_encode($a['name']) ?></td>
-              <td><?= $a['email'] ?></td>
-              <td><?= $a['sistemaClasificador'] ?></td>
-              <td>
-                <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault<?= $count ?>" name="usuarios[<?= $count ?>][Estado]" data-id="<?= $a['id'] ?>" value="<?= $a['Estado'] ?>" <?php if ($a['Estado'] == 1) echo 'checked'; ?>>
-                  <label class="form-check-label" for="flexSwitchCheckDefault<?= $count ?>"><?= ($a['Estado'] == 1) ? 'on' : 'off'; ?></label>
-                  <input type="hidden" name="usuarios[<?= $count ?>][email]" value="<?= $a['email'] ?>">
+            <form method="POST" action="">
+              <?php
+              $F = new funciones;
+              if (count($F->usuarios()) !== 0) { ?>
+                <table class="table table-bordered dt-responsive table-hover display nowrap" id="mtable" cellspacing="0" style="text-align: center;">
+                  <thead>
+                    <tr class="encabezado table-dark" data-id="1">
+                      <th scope="col">Nombre</th>
+                      <th scope="col">Email</th>
+                      <th scope="col">Rol</th>
+                      <th scope="col">Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody style="text-align: center;">
+                    <?php
+                    $count = 0;
+                    foreach ($F->usuarios() as $a) :
+                      $count++;
+                    ?>
+                      <tr>
+                        <td><?= utf8_encode($a['name']) ?></td>
+                        <td><?= $a['email'] ?></td>
+                        <td><?= $a['sistemaClasificador'] ?></td>
+                        <td>
+                          <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault<?= $count ?>" name="usuarios[<?= $count ?>][Estado]" data-id="<?= $a['id'] ?>" value="<?= $a['Estado'] ?>" <?php if ($a['Estado'] == 1) echo 'checked'; ?>>
+                            <label class="form-check-label" for="flexSwitchCheckDefault<?= $count ?>"><?= ($a['Estado'] == 1) ? 'on' : 'off'; ?></label>
+                            <input type="hidden" name="usuarios[<?= $count ?>][email]" value="<?= $a['email'] ?>">
+                          </div>
+                        </td>
+                      </tr>
+                    <?php endforeach; ?>
+                  </tbody>
+                </table>
+              <?php } ?>
+              <button id="" type="submit" class="btn btn-warning enviarEstado" name="enviarEstado" value="" style="display:none"></button>
+            </form>
+
+            <div class="container">
+              <div class="row">
+                <div class="col-4 col-sm-4 col-md-4 col-lg-4 col-xl-4"></div>
+                <div class="col-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                  <div class="text-center">
+                    <button id="" class="btn btn-success showAlertButtonestado" name="">Guardar</button>
+                  </div>
                 </div>
-              </td>
-            </tr>
-          <?php endforeach; ?>
-        </tbody>
-      </table>
-    <?php } ?>
-    <button id="" type="submit" class="btn btn-warning enviarEstado" name="enviarEstado" value="" style="display:none"></button>
-  </form>
-
-  <div class="container">
-    <div class="row">
-      <div class="col-4 col-sm-4 col-md-4 col-lg-4 col-xl-4"></div>
-      <div class="col-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
-        <div class="text-center">
-          <button id="" class="btn btn-success showAlertButtonestado" name="">Guardar</button>
-        </div>
-      </div>
-      <div class="col-4 col-sm-4 col-md-4 col-lg-4 col-xl-4"></div>
-    </div>
-  </div>
-</div>
+                <div class="col-4 col-sm-4 col-md-4 col-lg-4 col-xl-4"></div>
+              </div>
+            </div>
+          </div>
 
 
 
@@ -242,6 +248,27 @@ if (isset($_SESSION['usuario'])) {
   </body>
 
   </html>
+
+  <script>
+  // Obtener el campo de entrada por su ID
+  var nameInput = document.getElementById('name');
+
+  // Agregar evento de validación en el campo de entrada
+  nameInput.addEventListener('input', function() {
+    // Obtener el valor ingresado
+    var value = this.value;
+    
+    // Expresión regular para caracteres especiales
+    var regex = /[!@#$%^&*(),.?":{}|<>]/;
+    
+    // Verificar si el valor contiene caracteres especiales
+    if (regex.test(value)) {
+      // Si contiene caracteres especiales, mostrar un mensaje de error y limpiar el campo
+      alert('El nombre no puede contener caracteres especiales.');
+      this.value = '';
+    }
+  });
+</script>
 
   <!-- script de alertas con redireccion onclick a enviar a los 2 segundos -->
   <script>
