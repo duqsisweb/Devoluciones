@@ -1,5 +1,5 @@
 <?php
-header('Content-Type: text/html; charset=UTF-8');
+header('Content-Type: text/html; charset=utf-8');
 session_start();
 error_reporting(0);
 
@@ -15,6 +15,7 @@ if (isset($_SESSION['usuario'])) {
 
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="Administrador" />
     <meta name="author" content="Yon Gonzalez" />
@@ -86,10 +87,10 @@ if (isset($_SESSION['usuario'])) {
       </div>
 
       <div>
-       <br>
+        <br>
       </div>
 
-     
+
 
       <div class="container" style="margin-top: 60px;">
         <div class="row">
@@ -101,8 +102,8 @@ if (isset($_SESSION['usuario'])) {
 
             <form method="POST">
               <div class="mb-3">
-              <label for="name" class="form-label">Nombre</label>
-<input name="name" type="text" class="form-control" id="name" aria-describedby="" required>
+                <label for="name" class="form-label">Nombre</label>
+                <input name="name" type="text" class="form-control" id="name" aria-describedby="" required>
               </div>
 
               <div class="mb-3">
@@ -197,6 +198,7 @@ if (isset($_SESSION['usuario'])) {
                       <th scope="col">Email</th>
                       <th scope="col">Rol</th>
                       <th scope="col">Estado</th>
+                      <th scope="col">Restablecer Contraseña</th>
                     </tr>
                   </thead>
                   <tbody style="text-align: center;">
@@ -216,6 +218,7 @@ if (isset($_SESSION['usuario'])) {
                             <input type="hidden" name="usuarios[<?= $count ?>][email]" value="<?= $a['email'] ?>">
                           </div>
                         </td>
+                        <td><button type="button" class="btn btn-danger reset-password" data-id="<?= $a['id'] ?>">Restablecer</button></td>
                       </tr>
                     <?php endforeach; ?>
                   </tbody>
@@ -250,30 +253,48 @@ if (isset($_SESSION['usuario'])) {
   </html>
 
   <script>
-  // Obtener el campo de entrada por su ID
-  var nameInput = document.getElementById('name');
+    // Obtener el campo de entrada por su ID
+    var nameInput = document.getElementById('name');
 
-  // Agregar evento de validación en el campo de entrada
-  nameInput.addEventListener('input', function() {
-    // Obtener el valor ingresado
-    var value = this.value;
-    
-    // Expresión regular para caracteres especiales
-    var regex = /[!@#$%^&*(),.?":{}|<>]/;
-    
-    // Verificar si el valor contiene caracteres especiales
-    if (regex.test(value)) {
-      // Si contiene caracteres especiales, mostrar un mensaje de error y limpiar el campo
-      alert('El nombre no puede contener caracteres especiales.');
-      this.value = '';
-    }
-  });
-</script>
+    // Agregar evento de validación en el campo de entrada
+    nameInput.addEventListener('input', function() {
+      // Obtener el valor ingresado
+      var value = this.value;
+
+      // Expresión regular para caracteres especiales
+      var specialCharsRegex = /[!@#$%^&*(),.?":{}|<>]/;
+
+      // Expresión regular para números
+      var numbersRegex = /[0-9]/;
+
+      // Verificar si el valor contiene caracteres especiales o números
+      if (specialCharsRegex.test(value) || numbersRegex.test(value)) {
+        // Si contiene caracteres especiales o números, mostrar un mensaje de error y limpiar el campo
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'El nombre no puede contener caracteres especiales o números.',
+        });
+        this.value = '';
+      }
+    });
+  </script>
+
 
   <!-- script de alertas con redireccion onclick a enviar a los 2 segundos -->
   <script>
     $(document).ready(function() {
       $('.showAlertButton').click(function() {
+        var name = $('#name').val();
+        var email = $('input[name="email"]').val();
+        var password = $('input[name="password"]').val();
+        var sistemaClasificador = $('#tipo-usuario').val();
+
+        if (name === '' || email === '' || password === '' || sistemaClasificador === '') {
+          Swal.fire('Todos los campos son obligatorios', '', 'warning');
+          return;
+        }
+
         Swal.fire({
           title: '¿Quieres guardar los cambios?',
           showDenyButton: true,
@@ -294,6 +315,7 @@ if (isset($_SESSION['usuario'])) {
       });
     });
   </script>
+
 
 
   <!-- alerta guardar estado update -->
@@ -348,6 +370,49 @@ if (isset($_SESSION['usuario'])) {
           },
           error: function() {
             // Manejar errores en caso de fallo en la solicitud AJAX
+          }
+        });
+      });
+    });
+  </script>
+
+
+  <script>
+    $(document).ready(function() {
+      // Agrega un evento de clic a los botones de restablecer
+      $('.reset-password').click(function() {
+        var userId = $(this).data('id');
+
+        // Muestra una alerta para ingresar la nueva contraseña
+        Swal.fire({
+          title: 'Restablecer contraseña',
+          input: 'password', // Campo de entrada de tipo password
+          inputAttributes: {
+            autocapitalize: 'off',
+          },
+          showCancelButton: true,
+          confirmButtonText: 'Restablecer',
+          showLoaderOnConfirm: true,
+          preConfirm: (password) => {
+            return fetch(`reset_password.php?userId=${userId}&password=${password}`)
+              .then(response => {
+                if (!response.ok) {
+                  throw new Error(response.statusText);
+                }
+                return response.json();
+              })
+              .catch(error => {
+                Swal.showValidationMessage(`Error: ${error}`);
+              });
+          },
+          allowOutsideClick: () => !Swal.isLoading(),
+        }).then((result) => {
+          if (result.isConfirmed) {
+            if (result.value === 'success') {
+              Swal.fire('Contraseña restablecida con éxito', '', 'success');
+            } else {
+              Swal.fire('Error al restablecer la contraseña', '', 'error');
+            }
           }
         });
       });
