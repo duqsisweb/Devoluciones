@@ -378,22 +378,25 @@ if (isset($_SESSION['usuario'])) {
 
 
   <script>
-    $(document).ready(function() {
-      // Agrega un evento de clic a los botones de restablecer
-      $('.reset-password').click(function() {
-        var userId = $(this).data('id');
+    // Agrega un evento de clic a los botones de restablecer
+    $('.reset-password').click(function() {
+      var userId = $(this).data('id');
 
-        // Muestra una alerta para ingresar la nueva contraseña
-        Swal.fire({
-          title: 'Restablecer contraseña',
-          input: 'password', // Campo de entrada de tipo password
-          inputAttributes: {
-            autocapitalize: 'off',
-          },
-          showCancelButton: true,
-          confirmButtonText: 'Restablecer',
-          showLoaderOnConfirm: true,
-          preConfirm: (password) => {
+      // Muestra una alerta para ingresar la nueva contraseña
+      Swal.fire({
+        title: 'Restablecer contraseña',
+        input: 'password', // Campo de entrada de tipo password
+        inputAttributes: {
+          autocapitalize: 'off',
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Restablecer',
+        showLoaderOnConfirm: true,
+        preConfirm: (password) => {
+          // Verificar si la contraseña está vacía o nula
+          if (!password || password.trim() === '') {
+            Swal.showValidationMessage('Por favor, digite una contraseña válida.');
+          } else {
             return fetch(`reset_password.php?userId=${userId}&password=${password}`)
               .then(response => {
                 if (!response.ok) {
@@ -404,17 +407,17 @@ if (isset($_SESSION['usuario'])) {
               .catch(error => {
                 Swal.showValidationMessage(`Error: ${error}`);
               });
-          },
-          allowOutsideClick: () => !Swal.isLoading(),
-        }).then((result) => {
-          if (result.isConfirmed) {
-            if (result.value === 'success') {
-              Swal.fire('Contraseña restablecida con éxito', '', 'success');
-            } else {
-              Swal.fire('Error al restablecer la contraseña', '', 'error');
-            }
           }
-        });
+        },
+        allowOutsideClick: () => !Swal.isLoading(),
+      }).then((result) => {
+        if (result.isConfirmed) {
+          if (result.value === 'success') {
+            Swal.fire('Contraseña restablecida con éxito', '', 'success');
+          } else {
+            Swal.fire('Error al restablecer la contraseña', '', 'error');
+          }
+        }
       });
     });
   </script>

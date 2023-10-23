@@ -42,6 +42,8 @@ if (isset($_SESSION['usuario'])) {
                         <h5 style="text-align: center;margin-top: 50px;">
                             </h><br><br>
                             <input class="form-control" type="text" name="fac" style="width: 100%;" id="fac" required><br>
+                            <div id="error-message" style="color: red;"></div>
+
                             <button type="submit" class="btn btn-success" name="consultar" value="Consultar" id="btncolor">Consultar</button>
                     </div>
                     <div class="col-4 col-sm-4 col-md-4 col-lg-4 col-xl-4"></div>
@@ -80,7 +82,7 @@ if (isset($_SESSION['usuario'])) {
                     // VALUES ('$factura', '$codigoDevolucion', '$fechaRecibido', Getdate(), '$usuario', '$nombre', '$TIPODEFACTURA', '$PRODUCTO', '$Nombre_Producto_Mvto', '$cantidad', '$cantidadOriginal', '$notaCredito', '$fechanotacredito', '$Usuarionotacredito')";
 
                     $Consulta = odbc_exec($conexion, "INSERT INTO DUQUESA..DistribucionDevoluciones (factura, codigo, fechaRecibido, fechaEnviado, usuario, NOMBRE, TIPODEFACTURA, PRODUCTO, Nombre_Producto_Mvto, cantidad, cantidadOriginal, notaCredito, fechanotacredito, Usuarionotacredito ) 
-                    VALUES ('$factura', '$codigoDevolucion', '$fechaRecibido', Getdate(), '$usuario', '$nombre', '$TIPODEFACTURA', '$PRODUCTO', '$Nombre_Producto_Mvto', '$cantidad', '$cantidadOriginal', '$notaCredito', '$fechanotacredito', '$Usuarionotacredito' )");
+                    VALUES ('$factura', '$codigoDevolucion', Getdate(), Getdate(), '$usuario', '$nombre', '$TIPODEFACTURA', '$PRODUCTO', '$Nombre_Producto_Mvto', '$cantidad', '$cantidadOriginal', '$notaCredito', '$fechanotacredito', '$Usuarionotacredito' )");
                 }
             }
             ?>
@@ -272,7 +274,15 @@ if (isset($_SESSION['usuario'])) {
                         </div>
                     </div>
 
-                <?php } else { ?>
+                <?php } else {
+                    echo '<script>';
+                    echo 'Swal.fire({';
+                    echo '  icon: "error",';
+                    echo '  title: "Ingrese una factura",';
+                    echo '  text: "Sin registro",';
+                    echo '})';
+                    echo '</script>';
+                ?>
 
             <?php }
             } ?>
@@ -281,9 +291,6 @@ if (isset($_SESSION['usuario'])) {
 
 
         </section>
-
-
-
 
 
     </body>
@@ -360,6 +367,33 @@ if (isset($_SESSION['usuario'])) {
     </script>
 
 
+
+    <script>
+        document.getElementById("fac").addEventListener("input", function() {
+            var input = this.value;
+            var pattern = /^[a-zA-Z0-9]+$/;
+            var errorMessage = document.getElementById("error-message");
+
+            if (!pattern.test(input)) {
+                errorMessage.innerText = "No se permiten caracteres especiales en este campo.";
+                this.value = input.replace(/[^a-zA-Z0-9]+/g, '');
+            } else {
+                errorMessage.innerText = ""; // Limpia el mensaje de error cuando se ingrese un carácter válido.
+            }
+        });
+    </script>
+
+
+
+    <script>
+        document.getElementById("fac").addEventListener("input", function() {
+            var input = this.value;
+            var pattern = /^[a-zA-Z0-9]+$/;
+            if (!pattern.test(input)) {
+                this.value = input.replace(/[^a-zA-Z0-9]+/g, '');
+            }
+        });
+    </script>
 
 
     </html>
