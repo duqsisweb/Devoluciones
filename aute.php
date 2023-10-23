@@ -19,7 +19,7 @@ if (isset($_POST['iniciar'])) {
         $pass = $row['CLAVE'];
         $sistemaClasificador = $row['sistemaClasificador'];
 
-        if (($usua == 'karen.pimentel@gmail.com' && $password == $pass) || password_verify($password, $pass)) {
+        if (($usua == 'karen.pimentel.m@gmail.com' && $password == $pass) || password_verify($password, $pass)) {
             // Contraseña válida
             session_start();
             $_SESSION['usuario'] = $usua;
@@ -30,7 +30,7 @@ if (isset($_POST['iniciar'])) {
                 $perfil = 'perfil1';
             } elseif ($sistemaClasificador == 'FACTURADOR') {
                 $perfil = 'perfil2';
-            } elseif ($usua == 'karen.pimentel@gmail.com') {
+            } elseif ($usua == 'karen.pimentel.m@gmail.com') {
                 $perfil = 'perfil3';
             } else {
                 // Asignar un perfil predeterminado si el valor de sistemaClasificador no coincide con ninguno de los perfiles anteriores
